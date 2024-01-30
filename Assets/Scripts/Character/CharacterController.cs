@@ -2,8 +2,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class CharacterController : MonoBehaviour
-    {
+    public sealed class CharacterController : MonoBehaviour, IGameFixedUpdateListener, IGamePrepareListener, IGameStartListener {
         [SerializeField] private GameObject character; 
         [SerializeField] private GameManager gameManager;
         [SerializeField] private BulletSystem _bulletSystem;
@@ -11,22 +10,29 @@ namespace ShootEmUp
         
         public bool _fireRequired;
 
-        private void OnEnable()
+        public void PrepareGame()
         {
             this.character.GetComponent<HitPointsComponent>().hpEmpty += this.OnCharacterDeath;
+            character.gameObject.SetActive(false);
+        }
+
+        public void StartGame()
+        {
+            character.gameObject.SetActive(true);
         }
 
         private void OnDisable()
         {
-            this.character.GetComponent<HitPointsComponent>().hpEmpty -= this.OnCharacterDeath;
+            if (this.character != null) {
+                this.character.GetComponent<HitPointsComponent>().hpEmpty -= this.OnCharacterDeath;
+            }
         }
 
         private void OnCharacterDeath(GameObject _) => this.gameManager.FinishGame();
 
-        private void FixedUpdate()
+        public void FixedUpdateGame()
         {
-            if (this._fireRequired)
-            {
+            if (this._fireRequired) {
                 this.OnFlyBullet();
                 this._fireRequired = false;
             }
@@ -45,5 +51,6 @@ namespace ShootEmUp
                 velocity = weapon.Rotation * Vector3.up * this._bulletConfig.speed
             });
         }
+
     }
 }

@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class InputManager : MonoBehaviour
+    public sealed class InputManager : MonoBehaviour, IGameFixedUpdateListener, IGameUpdateListener
     {
         public float HorizontalDirection { get; private set; }
 
@@ -12,28 +12,22 @@ namespace ShootEmUp
         [SerializeField]
         private CharacterController characterController;
 
-        private void Update()
+        public void UpdateGame()
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
+            if (Input.GetKeyDown(KeyCode.Space)) {
                 characterController._fireRequired = true;
             }
 
-            if (Input.GetKey(KeyCode.LeftArrow))
-            {
+            if (Input.GetKey(KeyCode.LeftArrow)) {
                 this.HorizontalDirection = -1;
-            }
-            else if (Input.GetKey(KeyCode.RightArrow))
-            {
+            } else if (Input.GetKey(KeyCode.RightArrow)) {
                 this.HorizontalDirection = 1;
-            }
-            else
-            {
+            } else {
                 this.HorizontalDirection = 0;
             }
         }
-        
-        private void FixedUpdate()
+
+        public void FixedUpdateGame()
         {
             this.character.GetComponent<MoveComponent>().MoveByRigidbodyVelocity(new Vector2(this.HorizontalDirection, 0) * Time.fixedDeltaTime);
         }

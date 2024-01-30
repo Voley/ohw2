@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class LevelBackground : MonoBehaviour
+    public sealed class LevelBackground : MonoBehaviour, IGamePrepareListener, IGameFixedUpdateListener
     {
         private float startPositionY;
 
@@ -20,7 +20,7 @@ namespace ShootEmUp
         [SerializeField]
         private Params m_params;
 
-        private void Awake()
+        public void PrepareGame()
         {
             this.startPositionY = this.m_params.m_startPositionY;
             this.endPositionY = this.m_params.m_endPositionY;
@@ -31,10 +31,9 @@ namespace ShootEmUp
             this.positionZ = position.z;
         }
 
-        private void FixedUpdate()
+        public void FixedUpdateGame()
         {
-            if (this.myTransform.position.y <= this.endPositionY)
-            {
+            if (this.myTransform.position.y <= this.endPositionY) {
                 this.myTransform.position = new Vector3(
                     this.positionX,
                     this.startPositionY,

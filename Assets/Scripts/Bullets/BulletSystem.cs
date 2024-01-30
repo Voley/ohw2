@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class BulletSystem : MonoBehaviour
+    public sealed class BulletSystem : MonoBehaviour, IGamePrepareListener, IGameFixedUpdateListener
     {
         [SerializeField]
         private int initialCount = 50;
@@ -16,28 +16,25 @@ namespace ShootEmUp
         private readonly Queue<Bullet> m_bulletPool = new();
         private readonly HashSet<Bullet> m_activeBullets = new();
         private readonly List<Bullet> m_cache = new();
-        
-        private void Awake()
-        {
-            for (var i = 0; i < this.initialCount; i++)
-            {
-                var bullet = Instantiate(this.prefab, this.container);
-                this.m_bulletPool.Enqueue(bullet);
-            }
-        }
-        
-        private void FixedUpdate()
+
+        public void FixedUpdateGame()
         {
             this.m_cache.Clear();
             this.m_cache.AddRange(this.m_activeBullets);
 
-            for (int i = 0, count = this.m_cache.Count; i < count; i++)
-            {
+            for (int i = 0, count = this.m_cache.Count; i < count; i++) {
                 var bullet = this.m_cache[i];
-                if (!this.levelBounds.InBounds(bullet.transform.position))
-                {
+                if (!this.levelBounds.InBounds(bullet.transform.position)) {
                     this.RemoveBullet(bullet);
                 }
+            }
+        }
+
+        public void PrepareGame()
+        {
+            for (var i = 0; i < this.initialCount; i++) {
+                var bullet = Instantiate(this.prefab, this.container);
+                this.m_bulletPool.Enqueue(bullet);
             }
         }
 
@@ -80,7 +77,7 @@ namespace ShootEmUp
                 this.m_bulletPool.Enqueue(bullet);
             }
         }
-        
+
         public struct Args
         {
             public Vector2 position;

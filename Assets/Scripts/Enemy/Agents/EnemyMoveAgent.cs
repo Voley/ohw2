@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyMoveAgent : MonoBehaviour
+    public sealed class EnemyMoveAgent : MonoBehaviour, IGameFixedUpdateListener
     {
         public bool IsReached
         {
@@ -15,22 +15,25 @@ namespace ShootEmUp
 
         private bool isReached;
 
+        private void OnEnable()
+        {
+            FindObjectOfType<GameManager>().AddListener(this);
+        }
+
         public void SetDestination(Vector2 endPoint)
         {
             this.destination = endPoint;
             this.isReached = false;
         }
 
-        private void FixedUpdate()
+        public void FixedUpdateGame()
         {
-            if (this.isReached)
-            {
+            if (this.isReached) {
                 return;
             }
-            
-            var vector = this.destination - (Vector2) this.transform.position;
-            if (vector.magnitude <= 0.25f)
-            {
+
+            var vector = this.destination - (Vector2)this.transform.position;
+            if (vector.magnitude <= 0.25f) {
                 this.isReached = true;
                 return;
             }

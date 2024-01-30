@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ShootEmUp
 {
-    public sealed class EnemyAttackAgent : MonoBehaviour
+    public sealed class EnemyAttackAgent : MonoBehaviour, IGameFixedUpdateListener
     {
         public delegate void FireHandler(GameObject enemy, Vector2 position, Vector2 direction);
 
@@ -20,26 +20,28 @@ namespace ShootEmUp
             this.target = target;
         }
 
+        private void OnEnable()
+        {
+            FindObjectOfType<GameManager>().AddListener(this);
+        }
+
         public void Reset()
         {
             this.currentTime = this.countdown;
         }
 
-        private void FixedUpdate()
+        public void FixedUpdateGame()
         {
-            if (!this.moveAgent.IsReached)
-            {
+            if (!this.moveAgent.IsReached) {
                 return;
             }
-            
-            if (!this.target.GetComponent<HitPointsComponent>().IsHitPointsExists())
-            {
+
+            if (!this.target.GetComponent<HitPointsComponent>().IsHitPointsExists()) {
                 return;
             }
 
             this.currentTime -= Time.fixedDeltaTime;
-            if (this.currentTime <= 0)
-            {
+            if (this.currentTime <= 0) {
                 this.Fire();
                 this.currentTime += this.countdown;
             }
